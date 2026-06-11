@@ -1,5 +1,8 @@
 # md-reader
 
+[![Gem Version](https://badge.fury.io/rb/md-reader.svg)](https://rubygems.org/gems/md-reader)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A simple Ruby gem that opens Markdown files in your browser as formatted HTML.
 
 ## Installation
