@@ -21,7 +21,7 @@ That's it. The file opens in your default browser with GitHub-like styling.
 
 ## Features
 
-- Fenced code blocks with syntax highlighting structure
+- Syntax highlighting for fenced code blocks (Ruby, Python, JS, Go, and [200+ languages](https://rouge-ruby.github.io/docs/Rouge/Lexer.html))
 - Tables, strikethrough, autolinks
 - Blockquotes, footnotes
 - Clean GitHub-inspired CSS — no external dependencies at runtime

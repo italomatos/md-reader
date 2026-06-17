@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
 require "redcarpet"
+require "rouge"
+require "rouge/plugins/redcarpet"
 require "md_reader/version"
 
 module MdReader
+  class HTMLWithHighlight < Redcarpet::Render::HTML
+    include Rouge::Plugins::Redcarpet
+  end
+
   class Converter
     MARKDOWN_EXTENSIONS = {
       fenced_code_blocks: true,
@@ -17,13 +23,17 @@ module MdReader
     }.freeze
 
     def call(content, title = "Document")
-      renderer = Redcarpet::Render::HTML.new(hard_wrap: true, with_toc_data: true)
+      renderer = HTMLWithHighlight.new(hard_wrap: true, with_toc_data: true)
       markdown = Redcarpet::Markdown.new(renderer, MARKDOWN_EXTENSIONS)
       body = markdown.render(content)
       html_template(body, title)
     end
 
     private
+
+    def highlight_css
+      Rouge::Themes::Github.render(scope: ".highlight")
+    end
 
     def html_template(body, title)
       <<~HTML
@@ -87,6 +97,23 @@ module MdReader
               font-size: 100%;
             }
 
+            .highlight {
+              font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+              font-size: 85%;
+              background: #f6f8fa;
+              border-radius: 6px;
+              padding: 1rem;
+              overflow: auto;
+              line-height: 1.45;
+              margin-bottom: 1rem;
+            }
+            .highlight pre {
+              margin: 0;
+              padding: 0;
+              background: transparent;
+              border-radius: 0;
+            }
+
             blockquote {
               margin: 0 0 1rem 0;
               padding: 0 1em;
@@ -130,6 +157,8 @@ module MdReader
             }
 
             mark { background: #fff3b8; border-radius: 2px; padding: 0.1em 0.2em; }
+
+            #{highlight_css}
           </style>
         </head>
         <body>

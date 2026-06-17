@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "redcarpet", "~> 3.6"
   gem.add_dependency "launchy",   "~> 2.5"
+  gem.add_dependency "rouge",     "~> 4.0"
 end
