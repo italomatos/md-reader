@@ -6,6 +6,27 @@ $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "md_reader"
 require "launchy"
 require "tmpdir"
+require "shellwords"
+
+# Dentro do WSL o launchy não acha browser (procura xdg-open/navegador de
+# desktop Linux). Detectamos o WSL e abrimos no Windows, traduzindo o caminho
+# Linux para o formato UNC (\\wsl.localhost\...) e montando uma URL file://.
+def wsl?
+  return ENV.key?("WSL_DISTRO_NAME") if ENV.key?("WSL_DISTRO_NAME")
+
+  File.exist?("/proc/version") &&
+    File.read("/proc/version").downcase.include?("microsoft")
+end
+
+def open_file(path)
+  if wsl?
+    win_path = `wslpath -w #{Shellwords.escape(path)}`.strip # \\wsl.localhost\...\x.html
+    url = "file:#{win_path.tr('\\', '/')}"                   # file://wsl.localhost/...
+    system("explorer.exe", url) # explorer costuma retornar status != 0 mesmo em sucesso
+  else
+    Launchy.open("file://#{path}")
+  end
+end
 
 if ARGV.empty?
   warn "Usage: md-reader <arquivo.md>"
@@ -35,6 +56,6 @@ File.write(tmp_path, html, encoding: "utf-8")
 at_exit { File.delete(tmp_path) rescue nil }
 
 puts "Abrindo #{title} no browser..."
-Launchy.open("file://#{tmp_path}")
+open_file(tmp_path)
 
 sleep 3
